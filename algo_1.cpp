@@ -139,6 +139,7 @@ void parseGraphFile(const string &filename, int &nodeCount, int &edgeCount)
 
     debugPrint("Graph file processed successfully");
 
+    cout << " Clique Size (h) is " << targetH << "\n";
     cout << " Total vertices in dataset: " << totalNodes << endl;
     cout << " Total edges in dataset: " << edgeCount << "\n";
 }
