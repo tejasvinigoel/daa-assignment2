@@ -28,10 +28,10 @@ Use the following commands to compile the algorithms:
 
 ```bash
 # Compile algo_1 algorithm
-g++ algo_1.cpp -o algo_1
+g++ -O2  algo_1.cpp -o algo_1
 
 # Compile algo_4 algorithm
-g++ algo_4.cpp -o algo_4
+g++ -O2  algo_4.cpp -o algo_4
 
 for datasets, first line is h (clique) value, second line is number of vertices and edges and next lines are the edges.
 save the dataset in a text file named input.txt
