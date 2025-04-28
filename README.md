@@ -34,7 +34,7 @@ g++ algo_1.cpp -o algo_1
 g++ algo_4.cpp -o algo_4
 
 for datasets, first line is h (clique) value, second line is number of vertices and edges and next lines are the edges.
-
+save the dataset in a text file named input.txt
 
 # Run algorithm 1
 ./algo_1 input.txt
