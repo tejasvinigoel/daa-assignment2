@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clique Analysis | DAA Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            background-color: var(--light);
+            color: var(--dark);
+            
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(-45deg, #2c3e50, #3498db, #2980b9, #2c3e50);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+
+
+        .dataset-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: transform 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .dataset-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        .metrics-table th, 
+        .metrics-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .metrics-table th {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .metrics-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+
+        .team-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .team-member {
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .github-link:hover {
+            background: var(--secondary);
+        }
+
+        .observations {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+
+        .observation-list {
+            list-style: none;
+        }
+
+        .observation-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .observation-list li::before {
+            content: "▹";
+            color: var(--secondary);
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .dataset-card {
+                padding: 1rem;
+            }
+        }
+
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+
+        /* Parallax header */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .parallax-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://source.unsplash.com/random/1600x900');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            transform: translateZ(-1px) scale(2);
+        }
+
+        /* Animated underline for section headers */
+        .dataset-card h2 {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dataset-card h2::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s ease-in-out;
+        }
+
+        .dataset-card h2:hover::after {
+            width: 100%;
+        }
+
+        /* Pulsing GitHub button */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .github-link:hover {
+            animation: pulse 1s infinite;
+        }
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .node, .edge {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .node {
+            width: 20px;
+            height: 20px;
+        }
+
+        .edge {
+            width: 2px;
+            height: 50px;
+        }
+
+        @keyframes float {
+            0% {transform: translateY(0px);}
+            50% {transform: translateY(-20px);}
+            100% {transform: translateY(0px);}
+        }
+
+        .floating-elements span {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .floating-elements span:nth-child(1) {left: 10%; top: 20%; animation-delay: 0s;}
+        .floating-elements span:nth-child(2) {left: 50%; top: 50%; animation-delay: 1s;}
+        .floating-elements span:nth-child(3) {right: 10%; top: 30%; animation-delay: 2s;}
+        .floating-elements span:nth-child(4) {left: 30%; top: 40%; animation-delay: 1.5s;}
+        .floating-elements span:nth-child(5) {right: 30%; top: 60%; animation-delay: 0.5s;}
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Clique Enumeration Analysis</h1>
+            <p id="subtitle"></p>
+        </div>
+        <div class="floating-elements">
+            <span class="node"></span>
+            <span class="node"></span>
+            <span class="node"></span>
+            <span class="edge"></span>
+            <span class="edge"></span>
+        </div>
+    </header>
+    
+    
+    <script>
+    const text = "Advanced Analysis of Graph Clique Algorithms";
+    let i = 0;
+    function typeWriter() {
+        if (i < text.length) {
+            document.getElementById("subtitle").innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typeWriter, 50);
+        }
+    }
+    window.onload = typeWriter;
+    </script>
+
+    
+    <main class="container fade-in">
+    <section class="dataset-card">
+        <h2>⏱️ Execution Times Comparison</h2>
+        <table class="metrics-table">
+            <thead>
+                <tr>
+                    <th>Dataset</th>
+                    <th>ELS Algorithm</th>
+                    <th>Tomita Algorithm</th>
+                    <th>Chiba-Arboricity Algorithm</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>email-Enron</td>
+                    <td>143.801s</td>
+                    <td>62.814s</td>
+                    <td>9240.506s</td>
+                </tr>
+                <tr>
+                    <td>wiki-Vote</td>
+                    <td>56.756s</td>
+                    <td>42.051s</td>
+                    <td>3240.304s</td>
+                </tr>
+                <tr>
+                    <td>as-Skitter</td>
+                    <td>840.203s</td>
+                    <td>43200.417s</td>
+                    <td>--</td>
+                </tr>
+            </tbody>
+        </table>
+    
+        <div class="chart-container">
+            <h3>Execution Time (email-Enron Dataset)</h3>
+            <canvas id="emailEnronChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <h3>Execution Time (wiki-Vote Dataset)</h3>
+            <canvas id="wikiVoteChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <h3>Execution Time (as-Skitter Dataset)</h3>
+            <canvas id="asSkitterChart"></canvas>
+        </div>
+    </section>
+    </main>
+        
+
+        <!-- Email-Enron Dataset -->
+        <section class="dataset-card">
+            <h2>📧 email-Enron Dataset</h2>
+            <table class="metrics-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>ELS Algorithm</th>
+                        <th>Tomita Algorithm</th>
+                        <th>Chiba-Arboricity Algorithm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Largest Clique Size</td>
+                        <td>20</td>
+                        <td>20</td>
+                        <td>20</td>
+                    </tr>
+                    <tr>
+                        <td>Total Maximal Cliques</td>
+                        <td>226,859</td>
+                        <td>226,859</td>
+                        <td>226,859</td>
+                    </tr>
+                    <tr>
+                        <td>Execution Time</td>
+                        <td>143.801s</td>
+                        <td>62.814s</td>
+                        <td>9240.506s</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="chart-container">
+                <h3>Clique Size Distribution</h3>
+                <canvas id="enronChart"></canvas>
+
+
+            </div>
+        </section>
+
+        <!-- Wiki-Vote Dataset -->
+        <section class="dataset-card">
+            <h2>🗳️ wiki-Vote Dataset</h2>
+            <table class="metrics-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>ELS Algorithm</th>
+                        <th>Tomita Algorithm</th>
+                        <th>Chiba-Arboricity Algorithm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Largest Clique Size</td>
+                        <td>17</td>
+                        <td>17</td>
+                        <td>17</td>
+                    </tr>
+                    <tr>
+                        <td>Total Maximal Cliques</td>
+                        <td>459,002</td>
+                        <td>459,002</td>
+                        <td>459,002</td>
+                    </tr>
+                    <tr>
+                        <td>Execution Time</td>
+                        <td>56.756s</td>
+                        <td>42.051s</td>
+                        <td>3240.304s</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="chart-container">
+                <h3>Clique Size Distribution</h3>
+                <canvas id="wikiChart"></canvas>
+            </div>
+        </section>
+
+        <!-- as-Skitter dataset-->
+        <section class="dataset-card">
+            <h2>🌍 as-Skitter Dataset</h2>
+            <table class="metrics-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>ELS Algorithm</th>
+                        <th>Tomita Algorithm</th>
+                        <th>Chiba-Arboricity Algorithm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Largest Clique Size</td>
+                        <td>67</td>
+                        <td>67</td>
+                        <td>67</td>
+                    </tr>
+                    <tr>
+                        <td>Total Maximal Cliques</td>
+                        <td>37,322,355</td>
+                        <td>37,322,355</td>
+                        <td>37,322,355</td>
+                    </tr>
+                    <tr>
+                        <td>Execution Time</td>
+                        <td>840.203s</td>
+                        <td>43200.417s</td>
+                        <td>--</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="chart-container">
+                <h3>Clique Size Distribution</h3>
+                <canvas id="skitterChart"></canvas>
+            </div>
+        </section>
+        
+
+        <!-- Observations -->
+        <section class="observations">
+            <h2>🔍 Key Observations</h2>
+            <ul class="observation-list">
+                
+                <li>Bron–Kerbosch with pivot serves as a reliable baseline for small to medium-sized graphs.</li>
+                <li>Degeneracy ordering excels on large sparse graphs, particularly social and web networks, offering near-optimal performance.</li>
+                <li>The arboricity-based method is most efficient for massive sparse and planar graphs, such as road networks.</li>
+            </ul>
+        </section>
+
+        <!-- Team -->
+        <section>
+            <section>
+                <h2>👥 Team Members</h2>
+                <div class="team-section">
+                    <div class="team-member">
+                        <h3>Snigdha Barui</h3>
+                        <ul>
+                            <li>Implementation of ELS algorithm</li>
+                            <li>Documentation and analysis</li>
+                        </ul>
+                    </div>
+                    <div class="team-member">
+                        <h3>Tanisha Agarwal</h3>
+                        <ul>
+                            <li>Implementation of Chiba algorithm</li>
+                            <li>Implementation of ELS algorithm</li>
+                        </ul>
+                    </div>
+                    <div class="team-member">
+                        <h3>Thrisha Reddy</h3>
+                        <ul>
+                            <li>Implementation of Tomita algorithm</li>
+                            <li>Documentation and analysis</li>
+                        </ul>
+                    </div>
+                    <div class="team-member">
+                        <h3>Tejasvini Goel</h3>
+                        <ul>
+                            <li>Implementation of Chiba algorithm</li>
+                            <li>Website Development</li>
+                        </ul>
+                    </div>
+                    <div class="team-member">
+                        <h3>Vaishnavi B</h3>
+                        <ul>
+                            <li>Implementation of Tomita algorithm</li>
+                            <li>Documentation and analysis</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+
+        <!-- GitHub Link -->
+        <section style="text-align: center; margin: 3rem 0;">
+            <a href="https://github.com/tejasvinigoel/daa-assignment" class="github-link">
+                <i class="fab fa-github"></i>
+                View Source Code
+            </a>
+        </section>
+    </main>
+
+    <script>
+        // Existing script content
+
+        // Parallax effect
+        window.addEventListener('scroll', function() {
+            const parallax = document.querySelector('.parallax-bg');
+            let scrollPosition = window.pageYOffset;
+            parallax.style.transform = 'translateY(' + scrollPosition * 0.5 + 'px)';
+        });
+
+        // Fade-in effect for sections
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.dataset-card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+    <script>
+        document.querySelectorAll('.metrics-table tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.backgroundColor = '#f8f9fa';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.backgroundColor = '';
+            });
+        });
+    </script>
+
+    
+    <script>
+        const datasets = ['email-Enron', 'wiki-Vote', 'as-Skitter'];
+        const algorithms = ['ELS', 'Tomita', 'Chiba-Arboricity'];
+
+        // Execution time data
+        const executionTimes = {
+            'email-Enron': [143.801, 62.814, 9240.506],
+            'wiki-Vote': [56.756, 42.051, 3240.304],
+            'as-Skitter': [840.203, 43200.417, 0]
+        };
+
+        const colors = [
+            'rgba(52, 152, 219, 0.6)',  // ELS
+            'rgba(231, 76, 60, 0.6)',   // Tomita
+            'rgba(46, 204, 113, 0.6)'   // Chiba-Arboricity
+        ];
+
+        const borderColors = [
+            'rgba(52, 152, 219, 1)',
+            'rgba(231, 76, 60, 1)',
+            'rgba(46, 204, 113, 1)'
+        ];
+
+        function createChart(ctx, title, datasetName) {
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: algorithms,
+                    datasets: [{
+                        label: title,
+                        data: executionTimes[datasetName],
+                        backgroundColor: colors,
+                        borderColor: borderColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title,
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Execution Time (ms)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        createChart(document.getElementById('emailEnronChart'), 'Execution Time: email-Enron', 'email-Enron');
+        createChart(document.getElementById('wikiVoteChart'), 'Execution Time: wiki-Vote', 'wiki-Vote');
+        createChart(document.getElementById('asSkitterChart'), 'Execution Time: as-Skitter', 'as-Skitter');
+    </script>
+    <script>
+        const enronData = {
+            labels: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+            datasets: [{
+                label: 'Clique Size Distribution (email-Enron)',
+                data: [14070, 7077, 13319, 18143, 22715, 25896, 24766, 22884, 21393, 17833, 
+                    15181, 11487, 7417, 3157, 1178, 286, 41, 10, 6],
+                backgroundColor: 'rgba(52, 152, 219, 0.6)',  // Blue color
+                borderColor: 'rgba(52, 152, 219, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const wikiData = {
+            labels: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+            datasets: [{
+                label: 'Clique Size Distribution (wiki-Vote)',
+                data: [8655, 13718, 27292, 48416, 68872, 83266, 76732, 54456, 35470, 
+                    21736, 11640, 5449, 2329, 740, 208, 23],
+                backgroundColor: 'rgba(231, 76, 60, 0.6)',  // Red color
+                borderColor: 'rgba(231, 76, 60, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const skitterData = {
+            labels: [
+                2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 
+                26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 
+                48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67
+            ],
+            datasets: [{
+                label: 'Clique Size Distribution (Skitter)',
+                data: [
+                    2319807, 3171609, 1823321, 939336, 684873, 598284, 588889, 608937, 665661, 728098, 
+                    798073, 877282, 945194, 980831, 939987, 839330, 729601, 639413, 600192, 611976, 
+                    640890, 673924, 706753, 753633, 818353, 892719, 955212, 999860, 1034106, 1055653, 
+                    1017560, 946717, 878552, 809485, 744634, 663650, 583922, 520239, 474301, 420796, 
+                    367879, 321829, 275995, 222461, 158352, 99522, 62437, 39822, 30011, 25637, 17707, 
+                    9514, 3737, 2042, 1080, 546, 449, 447, 405, 283, 242, 146, 84, 49, 22, 4
+                ],
+                backgroundColor: 'rgba(46, 204, 113, 0.6)',  // Green color
+                borderColor: 'rgba(46, 204, 113, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const skitterConfig = {
+            type: 'bar',
+            data: skitterData,
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Clique Size'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Frequency'
+                        }
+                    }
+                }
+            }
+        };
+
+
+        const enronConfig = {
+            type: 'bar',
+            data: enronData,
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Clique Size'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Frequency'
+                        }
+                    }
+                }
+            }
+        };
+
+        const wikiConfig = {
+            type: 'bar',
+            data: wikiData,
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Clique Size'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Frequency'
+                        }
+                    }
+                }
+            }
+        };
+
+        // Render charts
+        new Chart(document.getElementById('skitterChart'), skitterConfig);
+        new Chart(document.getElementById('enronChart'), enronConfig);
+        new Chart(document.getElementById('wikiChart'), wikiConfig);
+    </script>
+
+</body>
+</html>
